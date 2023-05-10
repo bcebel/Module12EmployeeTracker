@@ -35,12 +35,126 @@ function viewDepartments() {
     mainMenu();
   });
 }
+//write a function that adds a new employee and their rolw with a manager selected from a list of existing employees
+function addEmployee() {
+  const statement = "SELECT * FROM role";
+  db.query(statement, function (err, roles) {
+    if (err) throw err;
+    const roleChoices = roles.map((role) => ({
+      name: role.title,
+      value: role.id,
+    }));
+    const statement = "SELECT * FROM employee";
+    db.query(statement, function (err, employees) {
+      if (err) throw err;
+      const managerChoices = employees.map((employee) => ({
+        name: `${employee.first_name} ${employee.last_name}`,
+        value: employee.id,
+      }));
+      inquirer
+        .prompt([
+          {
+            type: "input",
+            name: "first_name",
+            message: "Enter employee's first name",
+          },
+          {
+            type: "input",
+            name: "last_name",
+            message: "Enter employee's last name",
+          },
+          {
+            type: "list",
+            name: "role_id",
+            message: "Select employee's role",
+            choices: roleChoices,
+          },
+          {
+            type: "list",
+            name: "manager_id",
+            message: "Select employee's manager",
+            choices: managerChoices,
+          },
+        ])
+        .then((response) => {
+          const statement = "INSERT INTO employee SET ?";
+          db.query(statement, response, function (err, result) {
+            if (err) throw err;
+            console.log("Employee added.");
+            mainMenu();
+          });
+        });
+    });
+  });
+}
+//write a function that adds a new department
+function addDepartment() {
+  inquirer
+
+    .prompt([
+      {
+        type: "input",
+        name: "name",
+        message: "Enter department name",
+      },
+    ])
+    .then((response) => {
+      const statement = "INSERT INTO department SET ?";
+      db.query(statement, response, function (err, result) {
+        if (err) throw err;
+        console.log("Department added.");
+        mainMenu();
+      });
+    });
+}
+//write a function that adds a new role
+function addRole() {
+  const statement = "SELECT * FROM department";
+  db.query(statement, function (err, departments) {
+    if (err) throw err;
+    const departmentChoices = departments.map((department) => ({
+      name: department.name,
+      value: department.id,
+    }));
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "title",
+          message: "Enter role title",
+        },
+        {
+          type: "input",
+          name: "salary",
+          message: "Enter role salary",
+        },
+        {
+          type: "list",
+          name: "department_id",
+          message: "Select role department",
+          choices: departmentChoices,
+        },
+      ])
+
+      .then((response) => {
+        const statement = "INSERT INTO role SET ?";
+        db.query(statement, response, function (err, result) {
+          if (err) throw err;
+          console.log("Role added.");
+          mainMenu();
+        });
+      });
+  });
+}
 
 function mainMenu() {
   const options = {
     viewEmployees: "View All Employees",
     viewRoles: "View All Roles",
     viewDepartments: "View All Departments",
+    addEmployee: "Add Employee",
+    addDepartment: "Add Department",
+    addRole: "Add Role",
     quit: "quit",
   };
 
@@ -64,6 +178,16 @@ function mainMenu() {
         case options.viewDepartments:
           viewDepartments();
           break;
+        case options.addEmployee:
+          addEmployee();
+          break;
+        case options.addDepartment:
+          addDepartment();
+          break;
+        case options.addRole:
+          addRole();
+          break;
+
         default:
           process.exit();
           break;
