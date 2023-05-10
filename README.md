@@ -16,7 +16,7 @@ The project is run using node js and SQL. You will need to clone the repository.
 
 Follow the prompts and you can create, read, update and delete the data. You can see employees, roles, departments and you can assign or change managers.
 This is a snapshot of the program:
-<img src="./screenshot.png" alt="screenshot" title="screenshot" width="500" height="600">
+<img src="./screenshot.png" alt="screenshot" title="screenshot" width="500">
 
 ## License
 
