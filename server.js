@@ -35,7 +35,7 @@ function viewDepartments() {
     mainMenu();
   });
 }
-//write a function that adds a new employee and their rolw with a manager selected from a list of existing employees
+//adds a new employee to the database
 function addEmployee() {
   const statement = "SELECT * FROM role";
   db.query(statement, function (err, roles) {
@@ -87,7 +87,7 @@ function addEmployee() {
     });
   });
 }
-//write a function that adds a new department
+//adds a new department
 function addDepartment() {
   inquirer
 
