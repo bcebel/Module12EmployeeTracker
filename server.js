@@ -5,7 +5,7 @@ const { db, connectToDatabase } = require("./db/database");
 
 function viewEmployees() {
   const statement =
-    "SELECT role.title as winnebago, employee.id as swan, employee.first_name as echidna, employee.last_name as flo, employee.role_id as wombat, employee.manager_id as emid " +
+    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, employee.manager_id " +
     "FROM employee " +
     "INNER JOIN role ON role.id=employee.role_id;";
   db.query(statement, function (err, employees) {
