@@ -5,9 +5,10 @@ const { db, connectToDatabase } = require("./db/database");
 
 function viewEmployees() {
   const statement =
-    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, CONCAT_WS(',',manager.first_name, manager.last_name) as manager " +
+    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name as department, CONCAT_WS(',',manager.first_name, manager.last_name) as manager " +
     "FROM employee " +
     "INNER JOIN role ON role.id=employee.role_id " +
+    "INNER JOIN department ON department.id=role.department_id " +
     "LEFT JOIN employee manager ON employee.manager_id = manager.id;";
   db.query(statement, function (err, employees) {
     if (err) throw err;
@@ -107,7 +108,7 @@ function addDepartment() {
       });
     });
 }
-//write a function that adds a new role
+//adds a new role
 function addRole() {
   const statement = "SELECT * FROM department";
   db.query(statement, function (err, departments) {
@@ -146,7 +147,53 @@ function addRole() {
       });
   });
 }
+function updateRole() {
+  const statement = "SELECT * FROM employee";
+  db.query(statement, function (err, employees) {
+    if (err) throw err;
+    const employeeChoices = employees.map((employee) => ({
+      name: `${employee.first_name} ${employee.last_name}`,
+      value: employee.id,
+    }));
+    const statement = "SELECT * FROM role";
+    db.query(statement, function (err, roles) {
+      if (err) throw err;
+      const roleChoices = roles.map((role) => ({
+        name: role.title,
+        value: role.id,
+      }));
+      inquirer
 
+        .prompt([
+          {
+            type: "list",
+            name: "employee_id",
+            message: "Select employee to update",
+            choices: employeeChoices,
+          },
+          {
+            type: "list",
+            name: "role_id",
+            message: "Select employee's new role",
+            choices: roleChoices,
+          },
+        ])
+
+        .then((response) => {
+          const statement = "UPDATE employee SET role_id = ? WHERE id = ?";
+          db.query(
+            statement,
+            [response.role_id, response.employee_id],
+            function (err, result) {
+              if (err) throw err;
+              console.log("Employee role updated.");
+              mainMenu();
+            }
+          );
+        });
+    });
+  });
+}
 function mainMenu() {
   const options = {
     viewEmployees: "View All Employees",
@@ -155,6 +202,7 @@ function mainMenu() {
     addEmployee: "Add Employee",
     addDepartment: "Add Department",
     addRole: "Add Role",
+    updateRole: "Update Employee Role",
     quit: "quit",
   };
 
@@ -186,6 +234,9 @@ function mainMenu() {
           break;
         case options.addRole:
           addRole();
+          break;
+        case options.updateRole:
+          updateRole();
           break;
 
         default:
