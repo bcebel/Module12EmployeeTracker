@@ -5,9 +5,10 @@ const { db, connectToDatabase } = require("./db/database");
 
 function viewEmployees() {
   const statement =
-    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, employee.manager_id " +
+    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, CONCAT_WS(',',manager.first_name, manager.last_name) as manager " +
     "FROM employee " +
-    "INNER JOIN role ON role.id=employee.role_id;";
+    "INNER JOIN role ON role.id=employee.role_id " +
+    "LEFT JOIN employee manager ON employee.manager_id = manager.id;";
   db.query(statement, function (err, employees) {
     if (err) throw err;
     console.table(employees);
